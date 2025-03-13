@@ -13,7 +13,7 @@ env:
   CRYPTO_ECR_REPOSITORY: crypto-alert-service
   CRYPTO_ECS_SERVICE: crypto-alert-service
   CRYPTO_ECS_CLUSTER: crypto
-  CRYPTO_ECS_TASK_DEFINITION: crypto-alert-service:2
+  CRYPTO_ECS_TASK_DEFINITION: arn:aws:ecs:eu-central-1:387070877324:task-definition/crypto-alert-service:2
   CRYPTO_CONTAINER_NAME: crypto-alert-service
 
   # Service 2: Worker
