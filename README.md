@@ -11,7 +11,7 @@ Once the message is in AWS SQS, it can trigger an AWS Lambda function, which pro
 
 ## Local Installation
 
-```
+```shell
 cd deployments && docker-compose up -d
 ```
 

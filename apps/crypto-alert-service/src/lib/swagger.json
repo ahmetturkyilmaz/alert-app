@@ -1,97 +1,101 @@
 {
-	"swagger": "2.0",
-	"info": {
-		"title": "Alerts API",
-		"version": "1.0.0",
-		"description": "API for managing alerts"
-	},
-	"paths": {
-		"/api/alerts": {
-			"get": {
-				"summary": "Get Alerts",
-				"description": "Fetch the list of alerts",
-				"parameters": [
-					{
-						"name": "Authorization",
-						"in": "header",
-						"required": true,
-						"type": "string",
-						"description": "use Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY for testing purposes"
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "Successfully retrieved alerts",
-						"schema": {
-							"type": "array",
-							"items": {
-								"type": "object",
-								"properties": {
-									"condition": {
-										"type": "string"
-									},
-									"targetPrice": {
-										"type": "number"
-									},
-									"symbol": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					},
-					"401": {
-						"description": "Unauthorized"
-					}
-				}
-			},
-			"post": {
-				"summary": "Create an Alert",
-				"description": "Create a new alert with a condition, target price, and symbol",
-				"parameters": [
-					{
-						"name": "Authorization",
-						"in": "header",
-						"required": true,
-						"type": "string",
-						"description": "use Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY for testing purposes"
-					},
-					{
-						"name": "body",
-						"in": "body",
-						"required": true,
-						"schema": {
-							"type": "object",
-							"properties": {
-								"condition": {
-									"type": "string",
-									"description": "Condition for the alert"
-								},
-								"targetPrice": {
-									"type": "number",
-									"description": "Target price for the alert"
-								},
-								"symbol": {
-									"type": "string",
-									"description": "Symbol for the alert"
-								}
-							},
-							"required": ["condition", "targetPrice", "symbol"]
-						}
-					}
-				],
-				"responses": {
-					"201": {
-						"description": "Alert created successfully"
-					},
-					"400": {
-						"description": "Invalid request body"
-					},
-					"401": {
-						"description": "Unauthorized"
-					}
-				}
-			}
-		}
-	}
+  "swagger": "2.0",
+  "info": {
+    "title": "Alerts API",
+    "version": "1.0.0",
+    "description": "API for managing alerts"
+  },
+  "paths": {
+    "/api/alerts": {
+      "get": {
+        "summary": "Get Alerts",
+        "description": "Fetch the list of alerts",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "use Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY for testing purposes"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved alerts",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "condition": {
+                    "type": "string"
+                  },
+                  "targetPrice": {
+                    "type": "number"
+                  },
+                  "symbol": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an Alert",
+        "description": "Create a new alert with a condition, target price, and symbol",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "use Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY for testing purposes"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "condition": {
+                  "type": "string",
+                  "description": "Condition for the alert"
+                },
+                "targetPrice": {
+                  "type": "number",
+                  "description": "Target price for the alert"
+                },
+                "symbol": {
+                  "type": "string",
+                  "description": "Symbol for the alert"
+                }
+              },
+              "required": [
+                "condition",
+                "targetPrice",
+                "symbol"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Alert created successfully"
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  }
 }

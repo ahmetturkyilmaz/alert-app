@@ -1,1 +1,2 @@
-export { alerts } from "./alert";
+export {alerts} from "./alert";
+export {healthCheck} from "./health";

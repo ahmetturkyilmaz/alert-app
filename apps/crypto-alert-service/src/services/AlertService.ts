@@ -1,24 +1,32 @@
-import { dbClient } from "../db/client";
+import type {alerts, PrismaClient} from "@prisma/client";
+
+interface AlertData {
+    condition: string;
+    targetPrice: number;
+    symbol: string;
+}
 
 export class AlertService {
-	async findAll(user: string) {
-		const entity = await dbClient.query("SELECT * FROM alerts WHERE user_id = $1", [user]);
-		return entity.rows;
-	}
+    private _client: PrismaClient;
 
-	async addAlert(
-		user: string,
-		data: {
-			condition: string;
-			targetPrice: string;
-			symbol: string;
-		},
-	) {
-		const entity = await dbClient.query(
-			`INSERT INTO alerts (user_id, condition, target_price, symbol)
-             VALUES ($1, $2, $3, $4);`,
-			[user, data.condition, data.targetPrice, data.symbol],
-		);
-		return entity.rows;
-	}
+    constructor(dbClient: PrismaClient) {
+        this._client = dbClient;
+    }
+
+    async findAll(user: number): Promise<alerts[]> {
+        const entities = await this._client.alerts.findMany({where: {user_id: user}});
+        return entities;
+    }
+
+    async addAlert(user: number, data: AlertData): Promise<alerts> {
+        const entity = await this._client.alerts.create({
+            data: {
+                user_id: user,
+                condition: data.condition,
+                target_price: data.targetPrice,
+                symbol: data.symbol,
+            },
+        });
+        return entity;
+    }
 }
