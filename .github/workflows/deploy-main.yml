@@ -56,22 +56,6 @@ jobs:
           docker push $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Update ECS Task Definition for Crypto Alerts Service
-        id: task-def-crypto
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.CRYPTO_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CRYPTO_CONTAINER_NAME }}
-          image: ${{ env.image }}
-
-      - name: Deploy Crypto Alerts Service to Amazon ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def-crypto.outputs.task-definition }}
-          service: ${{ env.CRYPTO_ECS_SERVICE }}
-          cluster: ${{ env.CRYPTO_ECS_CLUSTER }}
-          wait-for-service-stability: true
-
       # ---- Deploy Worker Service ----
       - name: Build, Tag, and Push Worker Service Image
         id: build-worker
@@ -79,22 +63,8 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG ./app/worker
+          docker build -t $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG ./apps/worker
           docker push $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Update ECS Task Definition for Worker Service
-        id: task-def-worker
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: ${{ env.WORKER_ECS_TASK_DEFINITION }}
-          container-name: ${{ env.WORKER_CONTAINER_NAME }}
-          image: ${{ env.image }}
-
-      - name: Deploy Worker Service to Amazon ECS
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def-worker.outputs.task-definition }}
-          service: ${{ env.WORKER_ECS_SERVICE }}
-          cluster: ${{ env.WORKER_ECS_CLUSTER }}
-          wait-for-service-stability: true
+## TODO: DEPLOY TO ECS
