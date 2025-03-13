@@ -51,7 +51,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG ./app/crypto-alerts-service
+          docker build -t $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG ./app/crypto-alert-service
           docker push $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
