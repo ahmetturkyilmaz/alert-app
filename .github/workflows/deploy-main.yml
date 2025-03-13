@@ -1,0 +1,97 @@
+name: Deploy to Amazon ECS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }} # Set your ECR registry URL
+
+  # Service 1: Crypto Alerts Service
+  CRYPTO_ECR_REPOSITORY: crypto-alert-service
+  CRYPTO_ECS_SERVICE: crypto-alert-service
+  CRYPTO_ECS_CLUSTER: crypto
+  CRYPTO_ECS_TASK_DEFINITION: crypto-alert-service:2
+  CRYPTO_CONTAINER_NAME: crypto-alert-service
+
+  # Service 2: Worker
+  WORKER_ECR_REPOSITORY: worker-service
+  WORKER_ECS_SERVICE: worker-service
+  WORKER_ECS_CLUSTER: crypto
+  WORKER_ECS_TASK_DEFINITION: worker-service:1
+  WORKER_CONTAINER_NAME: worker-service
+
+jobs:
+  deploy:
+    name: Deploy Services
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ---- Deploy Crypto Alerts Service ----
+      - name: Build, Tag, and Push Crypto Alerts Service Image
+        id: build-crypto
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG ./app/crypto-alerts-service
+          docker push $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Update ECS Task Definition for Crypto Alerts Service
+        id: task-def-crypto
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.CRYPTO_ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CRYPTO_CONTAINER_NAME }}
+          image: ${{ env.image }}
+
+      - name: Deploy Crypto Alerts Service to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-crypto.outputs.task-definition }}
+          service: ${{ env.CRYPTO_ECS_SERVICE }}
+          cluster: ${{ env.CRYPTO_ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # ---- Deploy Worker Service ----
+      - name: Build, Tag, and Push Worker Service Image
+        id: build-worker
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG ./app/worker
+          docker push $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Update ECS Task Definition for Worker Service
+        id: task-def-worker
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.WORKER_ECS_TASK_DEFINITION }}
+          container-name: ${{ env.WORKER_CONTAINER_NAME }}
+          image: ${{ env.image }}
+
+      - name: Deploy Worker Service to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def-worker.outputs.task-definition }}
+          service: ${{ env.WORKER_ECS_SERVICE }}
+          cluster: ${{ env.WORKER_ECS_CLUSTER }}
+          wait-for-service-stability: true

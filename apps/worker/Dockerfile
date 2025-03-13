@@ -10,8 +10,5 @@ RUN yarn install
 
 COPY . .
 
-# Expose ports (if needed)
-EXPOSE 3000
-
 # Start both apps with PM2
 CMD ["yarn", "start"]
