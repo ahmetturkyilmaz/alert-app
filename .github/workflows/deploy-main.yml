@@ -23,6 +23,7 @@ env:
   WORKER_ECS_TASK_DEFINITION: worker-service:1
   WORKER_CONTAINER_NAME: worker-service
 
+
 jobs:
   deploy:
     name: Deploy Services
