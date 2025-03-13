@@ -48,6 +48,7 @@ jobs:
       - name: Build, Tag, and Push Crypto Alerts Service Image
         id: build-crypto
         env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG ./app/crypto-alerts-service
@@ -74,6 +75,7 @@ jobs:
       - name: Build, Tag, and Push Worker Service Image
         id: build-worker
         env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG ./app/worker
