@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "commonjs",
+		"lib": ["ES2020"],
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"moduleResolution": "node",
+		"typeRoots": ["src/types", "./node_modules/@types", "@types"]
+	},
+	"include": ["src/**/*", "src/types/**/*"],
+	"exclude": ["../../crypto-alert-service/node_modules", "dist"]
+}

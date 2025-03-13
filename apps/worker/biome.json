@@ -1,0 +1,35 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.8.2/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"files": {
+		"ignore": ["dist", "node_modules"]
+	},
+	"formatter": {
+		"enabled": true,
+		"lineWidth": 150
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noUselessTypeConstraint": "off"
+			},
+			"correctness": {
+				"useJsxKeyInIterable": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off",
+				"noConsoleLog": "error",
+				"noShadowRestrictedNames": "off"
+			},
+			"a11y": {
+				"noSvgWithoutTitle": "off",
+				"useAltText": "off",
+				"useKeyWithClickEvents": "off"
+			}
+		}
+	}
+}
