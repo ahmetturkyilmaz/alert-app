@@ -6,7 +6,7 @@ on:
 
 env:
   DOCKER_DEFAULT_PLATFORM: linux/x86_64
-  AWS_REGION: us-east-1
+  AWS_REGION: eu-central-1
   ECR_REPOSITORY: crypto-alert-service
   ECS_CLUSTER: crypto
   ECS_SERVICE: crypto-alert-service
