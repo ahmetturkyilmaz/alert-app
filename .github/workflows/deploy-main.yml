@@ -1,41 +1,31 @@
-name: Deploy to Amazon ECS
+name: Deploy to Amazon ECR
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
 
 env:
-  AWS_REGION: eu-central-1
-  ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }} # Set your ECR registry URL
+  DOCKER_DEFAULT_PLATFORM: linux/x86_64
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: crypto-alert-service
+  ECS_CLUSTER: crypto
+  ECS_SERVICE: crypto-alert-service
 
-  # Service 1: Crypto Alerts Service
-  CRYPTO_ECR_REPOSITORY: crypto-alert-service
-  CRYPTO_ECS_SERVICE: crypto-alert-service
-  CRYPTO_ECS_CLUSTER: crypto
-  CRYPTO_ECS_TASK_DEFINITION: arn:aws:ecs:eu-central-1:387070877324:task-definition/crypto-alert-service:2
-  CRYPTO_CONTAINER_NAME: crypto-alert-service
-
-  # Service 2: Worker
-  WORKER_ECR_REPOSITORY: worker-service
-  WORKER_ECS_SERVICE: worker-service
-  WORKER_ECS_CLUSTER: crypto
-  WORKER_ECS_TASK_DEFINITION: worker-service:1
-  WORKER_CONTAINER_NAME: worker-service
-
+permissions:
+  contents: read
 
 jobs:
   deploy:
-    name: Deploy Services
+    name: Deploy
     runs-on: ubuntu-latest
     environment: production
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -43,28 +33,24 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # ---- Deploy Crypto Alerts Service ----
-      - name: Build, Tag, and Push Crypto Alerts Service Image
-        id: build-crypto
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
+          DOCKER_DEFAULT_PLATFORM: ${{ env.DOCKER_DEFAULT_PLATFORM }}
         run: |
-          docker build -t $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG ./apps/crypto-alert-service
-          docker push $ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$CRYPTO_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build --platform=linux/x86_64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./apps/crypto-alert-service
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      # ---- Deploy Worker Service ----
-      - name: Build, Tag, and Push Worker Service Image
-        id: build-worker
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      - name: Deploy
         run: |
-          docker build -t $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG ./apps/worker
-          docker push $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-
-## TODO: DEPLOY TO ECS
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --force-new-deployment
