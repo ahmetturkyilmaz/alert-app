@@ -1,8 +1,7 @@
 import type {NextFunction, Request, Response} from "express";
-import jwt, {type JwtPayload} from "jsonwebtoken";
-import {authService} from "../services/factory";
+import {authService} from "../services";
 
-export const authHandler = (req: Request, res: Response, next: NextFunction): void => {
+export const authHandler = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
@@ -10,16 +9,11 @@ export const authHandler = (req: Request, res: Response, next: NextFunction): vo
         return;
     }
 
-    authService.verifyJWT(token, (err: any, decoded: any) => {
-        if (err) {
-            res.status(401).json({message: "Invalid or expired token"});
-            return;
-        }
-        if (decoded && typeof decoded === "object" && "userId" in decoded) {
-            req.user = (decoded as JwtPayload).userId;
-            next();
-        } else {
-            return res.status(401).json({message: "Invalid token structure"});
-        }
-    });
+    try {
+        const decoded = await authService.verifyJWT(token);
+        req.user = decoded.userId;
+        next();
+    } catch (error) {
+        res.status(401).json({message: "Invalid or expired token"});
+    }
 };

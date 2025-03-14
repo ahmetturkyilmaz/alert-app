@@ -1,13 +1,20 @@
-import jwt from "jsonwebtoken";
+import jwt, {type JwtPayload, type VerifyErrors} from "jsonwebtoken";
 
 export class AuthService {
-    private readonly _jwtSecretKey;
+    private readonly _jwtSecretKey = process.env.JWT_SECRET_KEY || "";
 
-    constructor(jwtSecretKey: string) {
-        this._jwtSecretKey = jwtSecretKey;
-    }
 
-    verifyJWT(token: string, callback: (err: any, decoded: any) => void) {
-        return jwt.verify(token, this._jwtSecretKey, callback);
+    verifyJWT(token: string): Promise<JwtPayload> {
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, this._jwtSecretKey, (err: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
+                if (err) {
+                    reject(err);
+                } else if (decoded && typeof decoded === "object") {
+                    resolve(decoded as JwtPayload);
+                } else {
+                    reject(new Error("Invalid token structure"));
+                }
+            });
+        });
     }
 }

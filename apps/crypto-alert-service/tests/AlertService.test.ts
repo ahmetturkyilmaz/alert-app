@@ -1,9 +1,9 @@
 import request from "supertest";
-import { app } from "../src";
 import { prisma } from "../src/db/prisma";
 import { getResponse } from "../src/utils/getResponse";
-
 require("dotenv").config();
+
+import { app } from "../src";
 
 jest.mock("../src/db/prisma", () => ({
 	prisma: {
@@ -26,8 +26,8 @@ describe("Alerts API", () => {
 
 	describe("GET /alerts", () => {
 		it("should return all alerts for the user", async () => {
-			(prisma.alerts.create as jest.Mock).mockResolvedValue(mockAlerts); // Mock the response
-
+			(prisma.alerts.findMany as jest.Mock).mockResolvedValue(mockAlerts); // Mock the response
+			process.env.JWT_SECRET = "bilira"
 			const res = await request(app)
 				.get("/api/alerts")
 				.set(
@@ -64,8 +64,8 @@ describe("Alerts API", () => {
 				.send(newAlert);
 
 			expect(res.status).toBe(200);
-			expect(res.body).toHaveProperty("id", 2);
-			expect(res.body).toMatchObject(newAlert);
+			expect(res.body.data).toHaveProperty("id", 2);
+			expect(res.body.data).toMatchObject(newAlert);
 		});
 
 		it("should return validation error for invalid data", async () => {

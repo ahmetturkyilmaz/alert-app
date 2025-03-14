@@ -1,7 +1,7 @@
 export type Alert = {
     symbol: string;
     targetPrice: number;
-    condition: ">" | "<";
-    userId: string;
+    condition: string;
+    userId: number;
     currentPrice: number;
 };

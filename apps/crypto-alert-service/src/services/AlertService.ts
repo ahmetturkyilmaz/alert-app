@@ -14,19 +14,17 @@ export class AlertService {
     }
 
     async findAll(user: number): Promise<alerts[]> {
-        const entities = await this._client.alerts.findMany({where: {user_id: user}});
-        return entities;
+        return this._client.alerts.findMany({where: {userId: user}});
     }
 
     async addAlert(user: number, data: AlertData): Promise<alerts> {
-        const entity = await this._client.alerts.create({
+        return this._client.alerts.create({
             data: {
-                user_id: user,
+                userId: user,
                 condition: data.condition,
-                target_price: data.targetPrice,
+                targetPrice: data.targetPrice,
                 symbol: data.symbol,
             },
         });
-        return entity;
     }
 }

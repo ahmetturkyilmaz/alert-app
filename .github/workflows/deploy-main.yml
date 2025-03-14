@@ -7,9 +7,12 @@ on:
 env:
   DOCKER_DEFAULT_PLATFORM: linux/x86_64
   AWS_REGION: eu-central-1
-  ECR_REPOSITORY: crypto-alert-service
-  ECS_CLUSTER: crypto
-  ECS_SERVICE: crypto-alert-service
+  SERVICE_ECR_REPOSITORY: crypto-alert-service
+  SERVICE_ECS_CLUSTER: crypto
+  SERVICE_ECS_SERVICE: crypto-alert-service
+  WORKER_ECR_REPOSITORY: alert-worker
+  WORKER_ECS_CLUSTER: crypto
+  WORKER_ECS_SERVICE: alert-worker
 
 permissions:
   contents: read
@@ -35,7 +38,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push image to Amazon ECR For Service
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -45,12 +48,32 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build --platform=linux/x86_64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./apps/crypto-alert-service
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build --platform=linux/x86_64 -t $ECR_REGISTRY/$SERVICE_ECR_REPOSITORY:$IMAGE_TAG ./apps/crypto-alert-service
+          docker push $ECR_REGISTRY/$SERVICE_ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$SERVICE_ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$SERVICE_ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$SERVICE_ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$SERVICE_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Deploy
         run: |
-          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --force-new-deployment
+          aws ecs update-service --cluster ${{ env.SERVICE_ECS_CLUSTER }} --service ${{ env.SERVICE_ECS_SERVICE }} --force-new-deployment
+
+      - name: Build, tag, and push image to Amazon ECR For Worker
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          DOCKER_DEFAULT_PLATFORM: ${{ env.DOCKER_DEFAULT_PLATFORM }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build --platform=linux/x86_64 -t $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG ./apps/worker
+          docker push $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG
+          docker tag $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$WORKER_ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$WORKER_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy
+        run: |
+          aws ecs update-service --cluster ${{ env.WORKER_ECS_CLUSTER }} --service ${{ env.WORKER_ECS_SERVICE }} --force-new-deployment

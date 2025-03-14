@@ -6,6 +6,6 @@ export function mapNotifications(rows: any[]): Alert[] {
         targetPrice: row.target_price,
         condition: row.condition,
         userId: row.user_id,
-        currentPrice: row.currentprice, // Ensure case matches DB column alias
+        currentPrice: row.current_price, // Ensure case matches DB column alias
     }));
 }

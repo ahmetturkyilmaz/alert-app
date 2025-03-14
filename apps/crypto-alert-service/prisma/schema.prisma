@@ -8,12 +8,12 @@ datasource db {
 }
 
 model alerts {
-  id                   Int       @id @default(autoincrement())
-  target_price         Float     @map("targetPrice")
-  user_id              Int       @map("userId")
-  symbol               String    @db.VarChar(10)
-  is_notification_sent Boolean?  @default(false) @map("isNotificationSent")
-  condition            String    @db.VarChar(1)
-  created_at           DateTime? @default(now()) @map("createdAt") @db.Timestamp(6)
-  updated_at           DateTime? @default(now()) @map("updatedAt") @db.Timestamp(6)
+  id                 Int       @id @default(autoincrement())
+  targetPrice        Float     @map("target_price")
+  userId             Int       @map("user_id")
+  symbol             String    @db.VarChar(10)
+  isNotificationSent Boolean?  @default(false) @map("is_notification_sent")
+  condition          String    @db.VarChar(1)
+  createdAt          DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt          DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
 }

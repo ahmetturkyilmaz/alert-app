@@ -1,6 +1,6 @@
 import express, {type NextFunction, type Request, type Response} from "express";
 import {body} from "express-validator";
-import {authHandler, validate } from "../middlewares";
+import {authHandler, validate} from "../middlewares";
 import {alertService} from "../services";
 import {type AlertRequestBody, tradingPairs} from "../types";
 import {getResponse} from "../utils/getResponse";
@@ -29,8 +29,7 @@ alerts.post(
     ) => {
         alertService
             .addAlert(req.user, req.body)
-            .then()
-            .then((blogs) => res.json(getResponse.success(blogs)))
+            .then((alerts) => res.json(getResponse.success(alerts)))
             .catch((e) => next(e));
     },
 );
