@@ -14,6 +14,39 @@ Once the message is in AWS SQS, it can trigger an AWS Lambda function, which pro
 ```shell
 cd deployments && docker-compose up -d
 ```
+## Creating an Alert for Bitcoin Price
+
+To create an alert for when the Bitcoin price reaches a certain level, you need to make a POST request to the /api/alerts endpoint. You will provide the following:
+
+- Authorization: Include a Bearer token in the Authorization header. This token should contain your user information.
+- Condition: Specify the condition for the alert (< for below the target price or > for above).
+- Target Price: The price at which you want the alert to trigger.
+- Symbol: The trading pair symbol, such as BTCUSDT.
+
+```
+curl --location 'http://localhost:3000/api/alerts' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY' \
+--data '{
+    "condition":"<",
+    "targetPrice":85024.01000000,
+    "symbol":"BTCUSDT"
+}'
+```
+
+## Worker for Sending Notifications
+
+The worker is responsible for checking the database at regular intervals to identify notifications that need to be sent to users. It checks the current Bitcoin price from the Binance API and determines if any alerts need to be triggered.
+
+
+- The worker checks the database for users who have set alerts based on a price condition (e.g., price above or below a target).
+- The current Bitcoin price is fetched from the Binance API.
+- Note: The worker does not check if the price has just crossed the target price. To handle this, a pricing service implementation is needed.
+- This pricing service could be implemented in various ways, including using an AWS Lambda function to track price changes and notify users when conditions are met.
+- Once an alert condition is met, the worker sends a notification to Amazon SQS (Simple Queue Service). From there, any AWS Lambda function can pick up the message and handle the notification (via email, web, or mobile notifications).
+
+Alternative Solution: AWS Lambda
+Instead of a worker running at intervals, this pricing logic could be implemented using AWS Lambda to perform real-time checks whenever there's a change in the price, reducing the need for frequent database checks and improving responsiveness.
 
 ## CI/CD
 In a production environment, both the Service and the Worker components can be deployed on AWS ECS (Elastic Container Service), alongside other services that are part of the application architecture.

@@ -23,11 +23,8 @@ services:
     restart: always
     environment:
       NODE_ENV: production
-      PG_DB_HOST: postgres
-      PG_DB_USER: ${POSTGRES_USER}
-      PG_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      PG_DB_NAME: ${POSTGRES_DB}
-      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     ports:
       - "3000:3000"
     networks:
