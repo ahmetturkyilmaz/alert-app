@@ -1,5 +1,5 @@
 import axios from "axios";
-import { binanceService } from "../src/services/factory";
+import { binanceService } from "../src/services";
 
 jest.mock("axios");
 
