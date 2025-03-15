@@ -1,4 +1,4 @@
 export type BinancePayload = {
-    symbol: string;
-    price: number;
-}
+  symbol: string;
+  price: number;
+};

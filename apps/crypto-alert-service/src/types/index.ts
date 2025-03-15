@@ -1,2 +1,1 @@
-export * from './request.types'
-export * from './tradingPairs'
+export * from "./request.types";

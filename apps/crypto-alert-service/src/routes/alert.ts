@@ -1,35 +1,47 @@
-import express, {type NextFunction, type Request, type Response} from "express";
-import {body} from "express-validator";
-import {authHandler, validate} from "../middlewares";
-import {alertService} from "../services";
-import {type AlertRequestBody, tradingPairs} from "../types";
-import {getResponse} from "../utils/getResponse";
+import express, {
+  type NextFunction,
+  type Request,
+  type Response,
+} from "express";
+import { body } from "express-validator";
+import { authHandler, validate } from "../middlewares";
+import { alertService } from "../services";
+import { type AlertRequestBody } from "../types";
+import { getResponse } from "../utils/getResponse";
+import { allowedTriggerConditions } from "../enums/tradingConditions";
+import { tradingPairs } from "../enums/tradingPairs";
 
 export const alerts = express.Router();
 
-alerts.get("/", authHandler, async (req: Request, res: Response, next: NextFunction) => {
+alerts.get(
+  "/",
+  authHandler,
+  async (req: Request, res: Response, next: NextFunction) => {
     alertService
-        .findAll(req.user)
-        .then((alerts) => res.json(getResponse.success(alerts)))
-        .catch((e) => next(e));
-});
+      .findAll(req.user)
+      .then((alerts) => res.json(getResponse.success(alerts)))
+      .catch((e) => next(e));
+  },
+);
 
 alerts.post(
-    "/",
-    authHandler,
-    validate([
-        body("condition", "InvalidValue").isIn(["<", ">"]),
-        body("targetPrice", "InvalidValue").isFloat(),
-        body("symbol", "InvalidValue").isIn(tradingPairs),
-    ]),
-    async (
-        req: Request<unknown, AlertRequestBody>,
-        res: Response,
-        next: NextFunction,
-    ) => {
-        alertService
-            .addAlert(req.user, req.body)
-            .then((alerts) => res.json(getResponse.success(alerts)))
-            .catch((e) => next(e));
-    },
+  "/",
+  authHandler,
+  validate([
+    body("triggerCondition", "InvalidValue")
+      .isNumeric()
+      .isIn(allowedTriggerConditions),
+    body("targetPrice", "InvalidValue").isFloat(),
+    body("pair", "InvalidValue").isIn(tradingPairs),
+  ]),
+  async (
+    req: Request<unknown, AlertRequestBody>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    alertService
+      .addAlert(req.user, req.body)
+      .then((alerts) => res.json(getResponse.success(alerts)))
+      .catch((e) => next(e));
+  },
 );

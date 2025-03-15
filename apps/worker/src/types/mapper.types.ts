@@ -1,7 +1,15 @@
 export type Alert = {
-    symbol: string;
-    targetPrice: number;
-    condition: string;
-    userId: number;
-    currentPrice: number;
+  pair: string;
+  targetPrice: number;
+  triggerCondition: number;
+  userId: number;
+  currentPrice: number;
+};
+
+export type AlertEntity = {
+  pair: string;
+  target_price: number;
+  trigger_condition: number;
+  user_id: number;
+  current_price: number;
 };

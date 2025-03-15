@@ -1,1 +1,6 @@
-export {binanceService, sqsService, notificationService, priceMonitoringService} from './factory'
+export {
+  binanceService,
+  sqsService,
+  notificationService,
+  priceMonitoringService,
+} from "./factory";

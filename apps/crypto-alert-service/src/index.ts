@@ -1,7 +1,9 @@
+import dotenv from "dotenv";
+
 let environment = process.env.NODE_ENV;
 if (!environment) {
-	require("dotenv").config();
-	environment = process.env.ACTIVE_PROFILE;
+  dotenv.config();
+  environment = process.env.ACTIVE_PROFILE;
 }
 
 import bodyParser from "body-parser";
@@ -28,12 +30,12 @@ app.get("/api/health-check", healthCheck);
 app.use("/api/alerts", alerts);
 
 if (profile === "development") {
-	app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
 app.use(errorHandler);
 
 app.listen(port, async () => {
-	console.debug(`[INFO] REST service listening at ${port}`);
-	console.debug(`[INFO] Active Profile: ${profile}`);
+  console.debug(`[INFO] REST service listening at ${port}`);
+  console.debug(`[INFO] Active Profile: ${profile}`);
 });

@@ -7,13 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model alerts {
+model Alerts {
   id                 Int       @id @default(autoincrement())
   targetPrice        Float     @map("target_price")
   userId             Int       @map("user_id")
-  symbol             String    @db.VarChar(10)
+  pair               String    @db.VarChar(10)
   isNotificationSent Boolean?  @default(false) @map("is_notification_sent")
-  condition          String    @db.VarChar(1)
+  triggerCondition   Int       @map("trigger_condition")
   createdAt          DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt          DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+
+  @@map("alerts")
 }

@@ -1,1 +1,1 @@
-export {alertService, authService} from './factory'
+export { alertService, authService } from "./factory";
