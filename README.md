@@ -26,9 +26,8 @@ To create an alert for when the Bitcoin price reaches a certain level, you need 
 - Pair: The trading pair symbol, such as BTCUSDT.
 
 ```
-curl --location 'https://alert-service-1735384669.eu-central-1.elb.amazonaws.com/api/alerts' \
+curl --location 'http://localhost:3000/api/alerts' \
 --header 'Content-Type: application/json' \
-<img width="1262" alt="Screenshot 2025-03-17 at 00 20 35" src="https://github.com/user-attachments/assets/43913463-829b-470d-a2f7-74622c9c7924" />
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY' \
 --data '{
     "triggerCondition":2,
