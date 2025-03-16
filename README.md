@@ -9,10 +9,12 @@ Worker – This component fetches real-time price data from the Binance API and 
 
 Once the message is in AWS SQS, it can trigger an AWS Lambda function, which processes the notification and determines the best way to alert the user. Depending on the user’s preferences, the notification can then be sent via mobile push notifications, email, or desktop alerts.
 
+<img width="1135" alt="Screenshot 2025-03-17 at 00 54 21" src="https://github.com/user-attachments/assets/b50f169c-dd4d-4adb-b357-b558e17c340d" />
+
 ## Local Installation
 
 ```shell
-cd deployments && docker-compose up -d
+cd deployment && docker-compose up -d
 ```
 ## Creating an Alert for Bitcoin Price
 
@@ -26,6 +28,7 @@ To create an alert for when the Bitcoin price reaches a certain level, you need 
 ```
 curl --location 'https://alert-service-1735384669.eu-central-1.elb.amazonaws.com/api/alerts' \
 --header 'Content-Type: application/json' \
+<img width="1262" alt="Screenshot 2025-03-17 at 00 20 35" src="https://github.com/user-attachments/assets/43913463-829b-470d-a2f7-74622c9c7924" />
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY' \
 --data '{
     "triggerCondition":2,
