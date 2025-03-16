@@ -25,8 +25,8 @@ export class NotificationService {
       FROM alerts ut
              JOIN prices p ON ut.pair = p.symbol
       WHERE
-        (ut.trigger_condition = 1 AND p.current_price ${TriggerConditionSymbols[TriggerCondition.LESS_THAN]} ut.target_price)
-         OR (ut.trigger_condition = 4 AND p.current_price ${TriggerConditionSymbols[TriggerCondition.GREATER_THAN]} ut.target_price);
+        (ut.trigger_condition = ${TriggerCondition.LESS_THAN} AND p.current_price ${TriggerConditionSymbols[TriggerCondition.LESS_THAN]} ut.target_price)
+         OR (ut.trigger_condition = ${TriggerCondition.GREATER_THAN} AND p.current_price ${TriggerConditionSymbols[TriggerCondition.GREATER_THAN]} ut.target_price);
     `;
 
     const res = await dbClient.query(query);
