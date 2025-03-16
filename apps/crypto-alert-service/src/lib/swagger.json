@@ -27,13 +27,13 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "condition": {
-                    "type": "string"
+                  "triggerCondition": {
+                    "type": "number"
                   },
                   "targetPrice": {
                     "type": "number"
                   },
-                  "symbol": {
+                  "pair": {
                     "type": "string"
                   }
                 }
@@ -63,23 +63,23 @@
             "schema": {
               "type": "object",
               "properties": {
-                "condition": {
-                  "type": "string",
+                "triggerCondition": {
+                  "type": "number",
                   "description": "Condition for the alert"
                 },
                 "targetPrice": {
                   "type": "number",
                   "description": "Target price for the alert"
                 },
-                "symbol": {
+                "pair": {
                   "type": "string",
                   "description": "Symbol for the alert"
                 }
               },
               "required": [
-                "condition",
+                "triggerCondition",
                 "targetPrice",
-                "symbol"
+                "pair"
               ]
             }
           }
@@ -90,6 +90,39 @@
           },
           "400": {
             "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/alerts/{id}": {
+      "delete": {
+        "summary": "Delete an Alert",
+        "description": "Deletes an alert by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "The ID of the alert to delete"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "use Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY for testing purposes"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Alert deleted successfully"
+          },
+          "400": {
+            "description": "Invalid ID format"
           },
           "401": {
             "description": "Unauthorized"

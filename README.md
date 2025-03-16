@@ -19,18 +19,18 @@ cd deployments && docker-compose up -d
 To create an alert for when the Bitcoin price reaches a certain level, you need to make a POST request to the /api/alerts endpoint. You will provide the following:
 
 - Authorization: Include a Bearer token in the Authorization header. This token should contain your user information.
-- Condition: Specify the condition for the alert (< for below the target price or > for above).
+- Trigger Condition: Specify the condition for the alert (1 for below the target price or 2 for above).
 - Target Price: The price at which you want the alert to trigger.
-- Symbol: The trading pair symbol, such as BTCUSDT.
+- Pair: The trading pair symbol, such as BTCUSDT.
 
 ```
-curl --location 'http://localhost:3000/api/alerts' \
+curl --location 'https://alert-service-1735384669.eu-central-1.elb.amazonaws.com/api/alerts' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcklkIjoxLCJpYXQiOjE1MTYyMzkwMjJ9.IMAHjoM9_YlMcuyWMRAD1-4Yd0Q-9neuHSznjog6nnY' \
 --data '{
-    "condition":"<",
+    "triggerCondition":2,
     "targetPrice":85024.01000000,
-    "symbol":"BTCUSDT"
+    "pair":"BTCUSDT"
 }'
 ```
 

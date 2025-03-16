@@ -6,8 +6,3 @@ export const allowedTriggerConditions = [
   TriggerCondition.LESS_THAN,
   TriggerCondition.GREATER_THAN,
 ];
-// Mapping for display purposes
-export const TriggerConditionSymbols: Record<TriggerCondition, string> = {
-  [TriggerCondition.LESS_THAN]: "<",
-  [TriggerCondition.GREATER_THAN]: ">",
-};

@@ -3,13 +3,14 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { authHandler, validate } from "../middlewares";
 import { alertService } from "../services";
 import { type AlertRequestBody } from "../types";
 import { getResponse } from "../utils/getResponse";
 import { allowedTriggerConditions } from "../enums/tradingConditions";
 import { tradingPairs } from "../enums/tradingPairs";
+import { GenericError } from "../errors";
 
 export const alerts = express.Router();
 
@@ -41,6 +42,25 @@ alerts.post(
   ) => {
     alertService
       .addAlert(req.user, req.body)
+      .then((alerts) => res.json(getResponse.success(alerts)))
+      .catch((e) => next(e));
+  },
+);
+alerts.delete(
+  "/:id",
+  authHandler,
+  validate([param("id", "InvalidValue").isString()]),
+  async (
+    req: Request<{ id: string }, AlertRequestBody>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      return next(new GenericError("BadRequest"));
+    }
+    alertService
+      .deleteAlert(req.user, id)
       .then((alerts) => res.json(getResponse.success(alerts)))
       .catch((e) => next(e));
   },
