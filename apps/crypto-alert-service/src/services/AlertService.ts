@@ -1,4 +1,5 @@
 import type { Alerts, PrismaClient } from "@prisma/client";
+import { GenericError } from "../errors";
 
 interface AlertData {
   triggerCondition: number;
@@ -29,6 +30,14 @@ export class AlertService {
   }
 
   async deleteAlert(userId: number, id: number): Promise<Alerts> {
+    const alert = await this._client.alerts.findUnique({
+      where: { userId, id },
+    });
+
+    if (!alert) {
+      throw new GenericError("NotFound");
+    }
+
     return this._client.alerts.delete({
       where: { userId, id },
     });

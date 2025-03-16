@@ -4,12 +4,14 @@ export type ErrorCode =
   | "InternalError"
   | "UnknownError"
   | "BadRequest"
+  | "NotFound"
   | "FormError";
 
 const ErrorCodeStatusCodeMap: { [k in ErrorCode]: number } = {
   InternalError: 500,
   BadRequest: 400,
   UnknownError: 500,
+  NotFound: 404,
   FormError: 400,
 };
 
