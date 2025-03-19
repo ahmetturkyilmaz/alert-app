@@ -50,11 +50,7 @@ alerts.delete(
   "/:id",
   authHandler,
   validate([param("id", "InvalidValue").isString()]),
-  async (
-    req: Request<{ id: string }, AlertRequestBody>,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
       return next(new GenericError("BadRequest"));
