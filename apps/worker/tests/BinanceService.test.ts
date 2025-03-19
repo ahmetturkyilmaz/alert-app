@@ -9,7 +9,7 @@ describe("fetchBinancePrices", () => {
       data: [{ symbol: "BTCUSDT", price: 45000.0 }],
     });
 
-    const prices = await binanceService.fetchBinancePrices();
+    const prices = await binanceService.fetchPrices();
     expect(prices).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

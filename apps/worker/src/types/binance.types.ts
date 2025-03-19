@@ -1,4 +1,4 @@
-export type BinancePayload = {
+export type PricePayload = {
   symbol: string;
   price: number;
 };

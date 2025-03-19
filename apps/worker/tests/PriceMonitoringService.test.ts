@@ -1,22 +1,22 @@
-import type { BinanceService } from "../src/services/BinanceService";
+import type { BinanceAdapter } from "../src/services/adapters/BinanceAdapter";
 import type { NotificationService } from "../src/services/NotificationService";
 import { PriceMonitoringService } from "../src/services/PriceMonitoringService";
 import type { SQSService } from "../src/services/SQSService";
 
-jest.mock("../src/services/BinanceService");
+jest.mock("../src/services/BinanceAdapter");
 jest.mock("../src/services/NotificationService");
 jest.mock("../src/services/SQSService");
 
 describe("PriceMonitoringService", () => {
   let priceMonitoringService: PriceMonitoringService;
-  let binanceService: jest.Mocked<BinanceService>;
+  let binanceService: jest.Mocked<BinanceAdapter>;
   let notificationService: jest.Mocked<NotificationService>;
   let sqsService: jest.Mocked<SQSService>;
 
   beforeEach(() => {
     binanceService = {
-      fetchBinancePrices: jest.fn(),
-    } as unknown as jest.Mocked<BinanceService>;
+      fetchPrices: jest.fn(),
+    } as unknown as jest.Mocked<BinanceAdapter>;
     notificationService = {
       getTriggeredNotifications: jest.fn(),
     } as unknown as jest.Mocked<NotificationService>;
@@ -47,14 +47,14 @@ describe("PriceMonitoringService", () => {
       },
     ];
 
-    binanceService.fetchBinancePrices.mockResolvedValue(mockPrices);
+    binanceService.fetchPrices.mockResolvedValue(mockPrices);
     notificationService.getTriggeredNotifications.mockResolvedValue(
       mockNotifications,
     );
 
     await priceMonitoringService.processPrices();
 
-    expect(binanceService.fetchBinancePrices).toHaveBeenCalled();
+    expect(binanceService.fetchPrices()).toHaveBeenCalled();
     expect(notificationService.getTriggeredNotifications).toHaveBeenCalledWith(
       mockPrices,
     );
@@ -66,7 +66,7 @@ describe("PriceMonitoringService", () => {
 
   it("should handle errors in processPrices gracefully", async () => {
     const error = new Error("Binance API failure");
-    binanceService.fetchBinancePrices.mockRejectedValue(error);
+    binanceService.fetchPrices.mockRejectedValue(error);
 
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 

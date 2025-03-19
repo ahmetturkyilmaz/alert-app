@@ -22,6 +22,7 @@ export class SQSService {
       }),
     };
     try {
+      // TODO: CHANGE IT TO BACH MESSAGING
       //	await this._sqsClient.send(new SendMessageCommand(message)); send a message to notification services
       console.debug("Sending message", message);
     } catch (error) {

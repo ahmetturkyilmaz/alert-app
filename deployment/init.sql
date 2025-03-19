@@ -6,5 +6,6 @@ CREATE TABLE IF NOT EXISTS alerts (
     is_notification_sent BOOLEAN DEFAULT FALSE,
     trigger_condition INTEGER CHECK (trigger_condition IN (1, 2, 3, 4, 5)) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_alerts UNIQUE (user_id, trigger_condition, target_price)
 );

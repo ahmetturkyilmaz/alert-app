@@ -1,6 +1,6 @@
 import { dbClient } from "../config/database";
 import { mapNotifications } from "../helpers/mappers/notificationMapper";
-import type { Alert, BinancePayload } from "../types";
+import type { Alert, PricePayload } from "../types";
 import {
   TriggerCondition,
   TriggerConditionSymbols,
@@ -8,28 +8,35 @@ import {
 
 export class NotificationService {
   async getTriggeredNotifications(
-    fetchedPrices: BinancePayload[],
+    fetchedPrices: PricePayload[],
   ): Promise<Alert[]> {
-    const values = fetchedPrices
-      .map(({ symbol, price }) => `('${symbol}', ${price})`)
-      .join(", ");
+    if (fetchedPrices.length === 0) return [];
+
+    // Extract symbols and prices into separate arrays
+    const symbols = fetchedPrices.map(({ symbol }) => symbol);
+    const prices = fetchedPrices.map(({ price }) => price);
 
     const query = `
-      WITH prices (symbol, current_price) AS (VALUES ${values})
-      SELECT
-        ut.pair,
-        ut.target_price,
-        ut.trigger_condition,
-        ut.user_id,
-        p.current_price
-      FROM alerts ut
-             JOIN prices p ON ut.pair = p.symbol
-      WHERE
-        (ut.trigger_condition = ${TriggerCondition.LESS_THAN} AND p.current_price ${TriggerConditionSymbols[TriggerCondition.LESS_THAN]} ut.target_price)
-         OR (ut.trigger_condition = ${TriggerCondition.GREATER_THAN} AND p.current_price ${TriggerConditionSymbols[TriggerCondition.GREATER_THAN]} ut.target_price);
-    `;
+            WITH prices AS (SELECT unnest($1::text[]) AS symbol, unnest($2::numeric[]) AS current_price)
+            SELECT ut.pair,
+                   ut.target_price,
+                   ut.trigger_condition,
+                   ut.user_id,
+                   p.current_price
+            FROM alerts ut
+                     JOIN prices p ON ut.pair = p.symbol
+            WHERE (ut.trigger_condition = $3 AND p.current_price ${TriggerConditionSymbols[TriggerCondition.LESS_THAN]} ut.target_price)
+               OR (ut.trigger_condition = $4 AND p.current_price ${TriggerConditionSymbols[TriggerCondition.GREATER_THAN]} ut.target_price);
+        `;
 
-    const res = await dbClient.query(query);
+    const queryParams = [
+      symbols,
+      prices,
+      TriggerCondition.LESS_THAN,
+      TriggerCondition.GREATER_THAN,
+    ];
+
+    const res = await dbClient.query(query, queryParams);
     return mapNotifications(res.rows);
   }
 }

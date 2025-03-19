@@ -1,17 +1,17 @@
-import type { BinanceService } from "./BinanceService";
 import type { NotificationService } from "./NotificationService";
 import type { SQSService } from "./SQSService";
+import { CryptoPriceAdapter } from "./adapters/CryptoPriceAdapter";
 
 export class PriceMonitoringService {
   constructor(
-    private readonly binanceService: BinanceService,
+    private readonly priceAdapter: CryptoPriceAdapter,
     private readonly notificationService: NotificationService,
     private readonly sqsService: SQSService,
   ) {}
 
   async processPrices(): Promise<void> {
     try {
-      const fetchedPrices = await this.binanceService.fetchBinancePrices();
+      const fetchedPrices = await this.priceAdapter.fetchPrices();
       const notificationsToTrigger =
         await this.notificationService.getTriggeredNotifications(fetchedPrices);
 
