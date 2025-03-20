@@ -33,4 +33,26 @@ curl --location 'http://localhost:3000/api/alerts' \
     "triggerCondition":2,
     "targetPrice":85024.01000000,
     "pair":"BTCUSDT"
-Project not foundProject not foundProject not found
+}'
+```
+
+## Worker for Sending Notifications
+
+The worker is responsible for checking the database at regular intervals to identify notifications that need to be sent to users. It checks the current Bitcoin price from the Binance API and determines if any alerts need to be triggered.
+
+
+- The worker checks the database for users who have set alerts based on a price condition (e.g., price above or below a target).
+- The current Bitcoin price is fetched from the Binance API.
+- Note: The worker does not check if the price has just crossed the target price. To handle this, a pricing service implementation is needed.
+- This pricing service could be implemented in various ways, including using an AWS Lambda function to track price changes and notify users when conditions are met.
+- Once an alert condition is met, the worker sends a notification to Amazon SQS (Simple Queue Service). From there, any AWS Lambda function can pick up the message and handle the notification (via email, web, or mobile notifications).
+
+Alternative Solution: AWS Lambda
+Instead of a worker running at intervals, this pricing logic could be implemented using AWS Lambda to perform real-time checks whenever there's a change in the price, reducing the need for frequent database checks and improving responsiveness.
+
+## CI/CD
+In a production environment, both the Service and the Worker components can be deployed on AWS ECS (Elastic Container Service), alongside other services that are part of the application architecture.
+
+The application container images are stored in AWS ECR (Elastic Container Registry), which acts as the central repository for the images. The containers can be pulled from ECR and run in ECS clusters.
+
+And as a database solution AWS RDS can be used.
