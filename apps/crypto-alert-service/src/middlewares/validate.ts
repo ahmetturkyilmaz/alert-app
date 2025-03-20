@@ -14,12 +14,6 @@ export const validate = (validations: ValidationChain[]) => {
     }
 
     const fields = errors.array().map((item) => item.msg);
-    return next(
-      new GenericError(
-        "FormError",
-        { failedFields: fields },
-        { failedFields: fields },
-      ),
-    );
+    return next(new GenericError("FormError", { failedFields: fields }));
   };
 };

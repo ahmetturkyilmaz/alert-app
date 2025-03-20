@@ -12,7 +12,6 @@ export class NotificationService {
   ): Promise<Alert[]> {
     if (fetchedPrices.length === 0) return [];
 
-    // Extract symbols and prices into separate arrays
     const symbols = fetchedPrices.map(({ symbol }) => symbol);
     const prices = fetchedPrices.map(({ price }) => price);
 
